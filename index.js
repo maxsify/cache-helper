@@ -4,8 +4,8 @@ const Cache = require('./app/cache.class')
 const cacheHelper = {
   exportCache: {},
   clients: {},
-  async loadCache(host, port, password) {
-    if(!(host && port)){
+  async loadCache(allowedHosts, host, port, password) {
+    if(!(allowedHosts && host && port)){
       throw new Error('please add redis host and port on your env file')
     }
     const mainCacheObj = new mainCache(host, port, password)
@@ -22,7 +22,7 @@ const cacheHelper = {
       cacheHelper.exportCache[objCache.key] = objCache
       cacheHelper.clients[objCache.key] = objCache.client
     }else{
-      const allowedRedisHost = (process.env.ALLOWED_REDIS_HOST || 'all').split(',')
+      const allowedRedisHost = allowedHosts.split(',')
       for(let key in caches){
         if(allowedRedisHost[0] === 'all' || allowedRedisHost.indexOf(key) > -1) {
           let objCache = JSON.parse(caches[key])
